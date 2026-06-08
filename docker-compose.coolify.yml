@@ -1,0 +1,61 @@
+services:
+  hermes-gateway:
+    build: .
+    image: hermes-agent-img
+    container_name: hermes-gateway
+    restart: unless-stopped
+    volumes:
+      - hermes-data:/opt/data
+    environment:
+      - HERMES_UID=1000
+      - HERMES_GID=1000
+    command: ["gateway", "run"]
+    networks:
+      - coolify
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  hermes-dashboard:
+    image: hermes-agent-img
+    container_name: hermes-dashboard
+    restart: unless-stopped
+    depends_on:
+      - hermes-gateway
+    volumes:
+      - hermes-data:/opt/data
+    environment:
+      - HERMES_UID=1000
+      - HERMES_GID=1000
+    command: ["dashboard", "--host", "0.0.0.0", "--no-open"]
+    labels:
+      - traefik.enable=true
+      - "traefik.http.routers.hermes-dashboard.rule=Host(`${HERMES_DOMAIN}`)"
+      - traefik.http.routers.hermes-dashboard.entrypoints=https
+      - traefik.http.routers.hermes-dashboard.tls.certresolver=letsencrypt
+      - traefik.http.services.hermes-dashboard.loadbalancer.server.port=9119
+    networks:
+      - coolify
+
+  litellm:
+    image: ghcr.io/berriai/litellm:main-latest
+    container_name: hermes-litellm
+    restart: unless-stopped
+    volumes:
+      - ./litellm-config.yaml:/app/config.yaml
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+    networks:
+      - coolify
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  hermes-data:
+    driver: local
+
+networks:
+  coolify:
+    external: true
