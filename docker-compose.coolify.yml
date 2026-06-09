@@ -29,7 +29,7 @@ services:
     command: ["dashboard", "--host", "0.0.0.0", "--port", "9119", "--no-open", "--insecure"]
     labels:
       - traefik.enable=true
-      - "traefik.http.routers.hermes-dashboard.rule=Host(`${HERMES_DOMAIN}`)"
+      - "traefik.http.routers.hermes-dashboard.rule=Host(`hermes.adi-life.com`)"
       - traefik.http.routers.hermes-dashboard.entrypoints=https
       - traefik.http.routers.hermes-dashboard.tls.certresolver=letsencrypt
       - traefik.http.services.hermes-dashboard.loadbalancer.server.port=9119
@@ -44,7 +44,6 @@ services:
       - ./litellm-config.yaml:/app/config.yaml
     command: ["--config", "/app/config.yaml", "--port", "4000"]
     environment:
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
       - NVIDIA_API_KEY=${NVIDIA_API_KEY}
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
     networks:
