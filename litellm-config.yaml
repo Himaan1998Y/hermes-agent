@@ -1,24 +1,24 @@
 model_list:
-  # Priority 1: Local Ollama (Hermes-4-14B via HuggingFace GGUF)
-  - model_name: hermes4
+  # Priority 1: Local Ollama (gemma4:12b - 7.4GB, 256K context)
+  - model_name: gemma4:12b
     litellm_params:
-      model: ollama/hf.co/bartowski/Hermes-4-14B-GGUF:Q4_K_M
+      model: ollama/gemma4:12b
       api_base: http://host.docker.internal:11434
 
   # Priority 2: Nvidia NIM fallback
-  - model_name: hermes4
+  - model_name: gemma4:12b
     litellm_params:
       model: nvidia_nim/meta/llama-3.3-70b-instruct
       api_key: os.environ/NVIDIA_API_KEY
 
   # Priority 3: OpenRouter free models fallback
-  - model_name: hermes4
+  - model_name: gemma4:12b
     litellm_params:
       model: openrouter/meta-llama/llama-3.3-70b-instruct:free
       api_key: os.environ/OPENROUTER_API_KEY
 
   # Priority 4: Gemini last resort
-  - model_name: hermes4
+  - model_name: gemma4:12b
     litellm_params:
       model: gemini/gemini-2.0-flash
       api_key: os.environ/GEMINI_API_KEY
@@ -29,10 +29,10 @@ router_settings:
   retry_after: 5
   allowed_fails: 1
   fallbacks:
-    - hermes4:
-        - hermes4
-        - hermes4
-        - hermes4
+    - gemma4:12b:
+        - gemma4:12b
+        - gemma4:12b
+        - gemma4:12b
 
 litellm_settings:
   set_verbose: false
