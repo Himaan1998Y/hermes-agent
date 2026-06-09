@@ -37,11 +37,11 @@ services:
       - coolify
 
   litellm:
-    image: ghcr.io/berriai/litellm:main-latest
+    build:
+      context: .
+      dockerfile: litellm.Dockerfile
     container_name: hermes-litellm
     restart: unless-stopped
-    volumes:
-      - ./litellm-config.yaml:/app/config.yaml
     command: ["--config", "/app/config.yaml", "--port", "4000"]
     environment:
       - NVIDIA_API_KEY=${NVIDIA_API_KEY}
